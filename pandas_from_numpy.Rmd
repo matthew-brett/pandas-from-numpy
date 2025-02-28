@@ -33,9 +33,10 @@ country_names
 For compactness, I'll also want to use the corresponding [standard three-letter code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) for each country, like so:
 
 ```{python}
-country_codes = np.array(['AUS', 'BRA', 'CAN', 'CHN',
-                          'DEU', 'ESP', 'FRA', 'GBR',
-                          'IND', 'ITA', 'JPN', 'KOR',
+country_codes = np.array(['AUS', 'BRA', 'CAN',
+                          'CHN', 'DEU', 'ESP',
+                          'FRA', 'GBR', 'IND',
+                          'ITA', 'JPN', 'KOR',
                           'MEX', 'RUS', 'USA'])
 country_codes
 ```
@@ -47,7 +48,7 @@ mmrs = np.array([6.0, 49.5 , 7.25,
                  28.75, 6.25, 5.0,
                  8.75, 9.25, 185.25,
                  4.0, 5.75, 12.0,
-                 40.0, 25.25, 14. ])
+                 40.0, 25.25, 14.0])
 mmrs
 ```
 
@@ -57,10 +58,10 @@ Let's say I also have the amount that each country spends on health care, per pe
 
 ```{python}
 hcepps = np.array([4256, 1303, 4617,
-                          658, 4910, 2964,
-                          4388, 3358, 242,
-                          3267, 3687, 2385,
-                          1081, 1756, 9060.])
+                   658, 4910, 2964,
+                   4388, 3358, 242,
+                   3267, 3687, 2385,
+                   1081, 1756, 9060])
 hcepps
 ```
 
@@ -73,7 +74,11 @@ mmr_series = pd.Series(mmrs, index=country_codes)
 mmr_series
 ```
 
-Notice the `index=` named argument.  Pandas terms the collection of labels for each value - the *index*.  Think of the index as you would an index for a book - it's a way to get from - in our case - the country code, to the corresponding value.  We can get to the collection of labels with the `.index` attribute of the Series.
+Notice the `index=` named argument.  Pandas terms the collection of labels for
+each value - the *index*.  Think of the index as you would an index for a book
+— it's a way to get from — in our case — the country code, to the
+corresponding value.  We can get to the collection of labels with the `.index`
+attribute of the Series.
 
 ```{python}
 mmr_series.index
@@ -236,8 +241,8 @@ df.loc[['KOR', 'USA']]
 
 A Series is the association of:
 
-* A Series is the association of:
-  * An array of values (`.values`)
-  * A sequence of labels for each value (`.index`)
-  * A name (which can be `None`).
-* A DataFrame is a dictionary-like collection of Series.
+* An array of values (`.values`)
+* A sequence of labels for each value (`.index`)
+* A name (which can be `None`).
+
+A DataFrame is a dictionary-like collection of Series.
