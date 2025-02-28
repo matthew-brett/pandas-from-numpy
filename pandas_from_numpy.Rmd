@@ -69,7 +69,7 @@ I want a good way to keep it clear which value corresponds to each country.  I'm
 One way of doing that is to make a new data structure, that contains the MMR values, but also has *labels* for each value.  Pandas has an object for that, called a `Series`.  You can construct a series by passing the values and the labels:
 
 ```{python}
-mmr_series = pd.Series(mmrs, index=country_codes, name='mmr')
+mmr_series = pd.Series(mmrs, index=country_codes)
 mmr_series
 ```
 
@@ -85,13 +85,7 @@ Of course `mmr_series` also contains the MMR values, accessible with the `.value
 mmr_series.values
 ```
 
-Notice too that the Series has a name, that we set with the `name=` argument to the `pd.Series` constructor:
-
-```{python}
-mmr_series.name
-```
-
-Think then of the Series as an object that asssociates an array of values (`.values`) and corresponding labels for each value (`.index`), and a name (`.name`).
+Think then of the Series as an object that associates an array of values (`.values`) with the corresponding labels for each value (`.index`).
 
 
 We can access values from their corresponding label, by using the `.loc` accessor, an attribute of the Series object.
@@ -162,7 +156,7 @@ But the real value from this idea comes when you have more than one Series with 
 For example, I can also make a Series with the health care expenditure (HCEPP) data, like this:
 
 ```{python}
-hcepp_series = pd.Series(hcepps, index=country_codes, name='hcepp')
+hcepp_series = pd.Series(hcepps, index=country_codes)
 hcepp_series
 ```
 
@@ -191,7 +185,10 @@ df
 
 Think of this data frame as being like a dictionary of Series.
 
-We can get the `mmr` series by name, by indexing directly into the data frame, like this:
+The keys in this dictionary are the column names we provided: `mmr` and `hcepp`; the values are the corresponding Series.
+
+We can get the `mmr` series by name, by indexing directly into the data frame,
+like this:
 
 ```{python}
 mmr_from_df = df['mmr']
@@ -209,11 +206,15 @@ Notice too, that the Series now has an extra attribute, which is the Name.
 We said above that Series are the association between an array of `.values`, and a corresponding collection of labels, in `.index`.  Now we see that the Series also has a `.name`, that we had not set in our original series:
 
 ```{python}
+# This is the Series we've extracted from the data frame.
 mmr_from_df.name
 ```
 
+As you can see, we had not set the name of the Series we built above using `pd.Series`, so it gets the default `.name` of `None`.
+
 ```{python}
-mmr_series.name
+# This was the original series we built with pd.Series.
+mmr_series.name is None
 ```
 
 We can also use `.loc` and `.iloc` accessors on the data frame, to get rows by label (index value) or by position:
