@@ -231,3 +231,13 @@ Notice too that indexing with more than one value, returns a subset of the data 
 ```{python}
 df.loc[['KOR', 'USA']]
 ```
+
+## What is a Series?  What is DataFrame
+
+A Series is the association of:
+
+* A Series is the association of:
+  * An array of values (`.values`)
+  * A sequence of labels for each value (`.index`)
+  * A name (which can be `None`).
+* A DataFrame is a dictionary-like collection of Series.
