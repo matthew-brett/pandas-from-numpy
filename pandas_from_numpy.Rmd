@@ -1,0 +1,232 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.16.0
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+# From Numpy to Pandas
+
+```{python}
+import numpy as np
+import pandas as pd
+```
+
+Let's say I have some countries in mind:
+
+```{python}
+country_names = np.array(['Australia', 'Brazil', 'Canada',
+                          'China', 'Germany', 'Spain',
+                          'France', 'United Kingdom', 'India',
+                          'Italy', 'Japan', 'Korea, Rep.',
+                          'Mexico', 'Russian Federation', 'United States'])
+country_names
+```
+
+For compactness, I'll also want to use the corresponding [standard three-letter code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) for each country, like so:
+
+```{python}
+country_codes = np.array(['AUS', 'BRA', 'CAN', 'CHN',
+                          'DEU', 'ESP', 'FRA', 'GBR',
+                          'IND', 'ITA', 'JPN', 'KOR',
+                          'MEX', 'RUS', 'USA'])
+country_codes
+```
+
+For each of these countries, I have the corresponding Maternal Mortality Rate (MMR).  This the number of women who die per 100,000 live births.  With a well-functioning health system, the death of a mother should be an extremely rare event.
+
+```{python}
+mmrs = np.array([6.0, 49.5 , 7.25,
+                 28.75, 6.25, 5.0,
+                 8.75, 9.25, 185.25,
+                 4.0, 5.75, 12.0,
+                 40.0, 25.25, 14. ])
+mmrs
+```
+
+By the way, these data are real; they come from statistics compiled by the World Bank from 2012 to 2016.  See [the gender data page](https://github.com/odsti/datasets/tree/main/gender_stats) for more detail.
+
+Let's say I also have the amount that each country spends on health care, per person.  Call this HeathCare Expenditure Per Person (HCEPP).   In due course, I'm interested to see whether HCEPP can predict the MMR values.
+
+```{python}
+hcepps = np.array([4256, 1303, 4617,
+                          658, 4910, 2964,
+                          4388, 3358, 242,
+                          3267, 3687, 2385,
+                          1081, 1756, 9060.])
+hcepps
+```
+
+I want a good way to keep it clear which value corresponds to each country.  I'm going to start with the MMR values.
+
+One way of doing that is to make a new data structure, that contains the MMR values, but also has *labels* for each value.  Pandas has an object for that, called a `Series`.  You can construct a series by passing the values and the labels:
+
+```{python}
+mmr_series = pd.Series(mmrs, index=country_codes, name='mmr')
+mmr_series
+```
+
+Notice the `index=` named argument.  Pandas terms the collection of labels for each value - the *index*.  Think of the index as you would an index for a book - it's a way to get from - in our case - the country code, to the corresponding value.  We can get to the collection of labels with the `.index` attribute of the Series.
+
+```{python}
+mmr_series.index
+```
+
+Of course `mmr_series` also contains the MMR values, accessible with the `.values` attribute:
+
+```{python}
+mmr_series.values
+```
+
+Notice too that the Series has a name, that we set with the `name=` argument to the `pd.Series` constructor:
+
+```{python}
+mmr_series.name
+```
+
+Think then of the Series as an object that asssociates an array of values (`.values`) and corresponding labels for each value (`.index`), and a name (`.name`).
+
+
+We can access values from their corresponding label, by using the `.loc` accessor, an attribute of the Series object.
+
+```{python}
+mmr_series.loc['MEX']
+```
+
+`.loc` is an accessor that allows us to pass labels (in the `.index`), and returns the corresponding values.  Here we ask for more than one value, by passing in a list of labels:
+
+```{python}
+mmr_series.loc[['KOR', 'USA']]
+```
+
+Notice above, that passing one label to `.loc` returns the value, but passing two or more labels to `.loc` returns a subset of the Series.   Put another way, one label gives a value, but more than one label gives a Series.
+
+
+Indexing with `.loc` is called *label-based indexing*.  You can also index by
+position, as you would with a Numpy array.  To remind ourselves, of basic
+indexing in Numpy, to get the thirteenth value in the Numpy array of MMR
+values, one could run:
+
+```{python}
+mmrs[12]
+```
+
+Numpy indexing with integers, like the above, is always indexing by position.
+Position 12 is the thirteenth element.
+
+You can do the same type of indexing with a Pandas series, with the `.iloc` accessor.  Think of `.iloc` as *integer* indexing, or, if you like, `loc`ating with `i`ntegers.
+
+```{python}
+mmr_series.iloc[12]
+```
+
+```{python}
+mmr_series.iloc[[11, 14]]
+```
+
+Notice again that one integer to `.iloc` gives a value, but two or more
+integers gives a Series.
+
+
+You can already imagine that this kind of label-based indexing could be
+useful, because it is easier to avoid mistakes with:
+
+```{python}
+mmr_series.loc['MEX']
+```
+
+— than it is to work out the position of Mexico in the array, and do:
+
+```{python}
+mmrs[11]  # Was Mexico at position 11?
+```
+
+— oh, whoops, I mean:
+
+```{python}
+mmrs[12]  # Ouch, no, it was a position 12.
+```
+
+As well as being harder to make mistakes, it makes the code easier to read, and therefore, easier to debug.
+
+
+But the real value from this idea comes when you have more than one Series with corresponding labels.
+
+For example, I can also make a Series with the health care expenditure (HCEPP) data, like this:
+
+```{python}
+hcepp_series = pd.Series(hcepps, index=country_codes, name='hcepp')
+hcepp_series
+```
+
+```{python}
+hcepp_series.loc['MEX']
+```
+
+But now imagine I want to look at the corresponding MMR and HCEPP values.   I can so this separately, for each Series, like this:
+
+```{python}
+mmr_series.loc['MEX']
+```
+
+```{python}
+hcepp_series.loc['MEX']
+```
+
+Imagine though, that I'm going to be doing this for multiple countries, and that I have multiple (not just two) values per country.  I would like a way of putting these Series together into a table, where the rows have labels (just as the Series values do), and the columns have names.
+
+Each Series corresponds to one column in this table.  Pandas calls these tables *data frames*.
+
+```{python}
+df = pd.DataFrame({'mmr': mmr_series, 'hcepp': hcepp_series})
+df
+```
+
+Think of this data frame as being like a dictionary of Series.
+
+We can get the `mmr` series by name, by indexing directly into the data frame, like this:
+
+```{python}
+mmr_from_df = df['mmr']
+mmr_from_df
+```
+
+Notice this returns a Series, extracted back from the data frame.
+
+```{python}
+type(mmr_from_df)
+```
+
+Notice too, that the Series now has an extra attribute, which is the Name.
+
+We said above that Series are the association between an array of `.values`, and a corresponding collection of labels, in `.index`.  Now we see that the Series also has a `.name`, that we had not set in our original series:
+
+```{python}
+mmr_from_df.name
+```
+
+```{python}
+mmr_series.name
+```
+
+We can also use `.loc` and `.iloc` accessors on the data frame, to get rows by label (index value) or by position:
+
+```{python}
+df.loc['MEX']
+```
+
+Notice what Pandas did here.  As for indexing into Series, indexing into the data frame *with a single label* returns the *contents* of the row.   And Pandas, being a general thinker, sees that the contents of the row are values, that have labels, where the labels are the column names.  Thus it returns the row to you as a new Series, where the Series has values from the row values, and labels from the column names.
+
+
+Notice too that indexing with more than one value, returns a subset of the data frame.  In strict parallel to indexing into a Series, indexing with multiple values into a data frame, returns a subset of the data frame, which is itself, a data frame.
+
+```{python}
+df.loc[['KOR', 'USA']]
+```
